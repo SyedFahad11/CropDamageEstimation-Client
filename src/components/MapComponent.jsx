@@ -11,7 +11,6 @@ import GeoJSON from 'ol/format/GeoJSON';
 const MapComponent = ({ onFinishDrawing }) => {
   const [map, setMap] = useState(null);
   const [drawSource, setDrawSource] = useState(null);
-  const [text, setText] = useState('');
 
   useEffect(() => {
     const initMap = () => {
@@ -47,10 +46,9 @@ const MapComponent = ({ onFinishDrawing }) => {
         const geojson = geojsonFormat.writeFeature(event.feature);
         console.log('GeoJSON:', geojson);
 
-        // Pass the text and geoJSON to the parent component
+        // Pass the geoJSON to the parent component
         if (onFinishDrawing) {
           onFinishDrawing({
-            text,
             geoJSON: geojson,
           });
         }
@@ -68,19 +66,11 @@ const MapComponent = ({ onFinishDrawing }) => {
         map.setTarget(null);
       }
     };
-  }, [onFinishDrawing, text]);
+  }, [onFinishDrawing]);
 
   return (
     <div>
       <div id="map-container" className="map"></div>
-      <div>
-        <label>Enter text:</label>
-        <input
-          type="text"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-      </div>
     </div>
   );
 };

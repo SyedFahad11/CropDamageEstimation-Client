@@ -7,18 +7,24 @@ import axios from 'axios';
 const DrawPage = () => {
   const navigate = useNavigate();
 
-  const handleFinishDrawing = async ({ text, geoJSON }) => {
+  const handleFinishDrawing = async ({ geoJSON }) => {
     try {
-      // Create a JSON object with text and geoJSON
+      // Get values directly from DOM
+      const text = document.getElementById('nameInput').value;
+      const startDate = document.getElementById('startDateInput').value;
+      const endDate = document.getElementById('endDateInput').value;
+
+      // Create a JSON object with name, dates, and geoJSON
       const dataToSend = {
         text,
+        startDate,
+        endDate,
         geoJSON,
       };
-      console.log(dataToSend);
+
       // Convert the JSON object to a JSON-formatted string
-      const sendContent={content:dataToSend};
-      console.log("send content is, ",sendContent);
-  
+      const sendContent = { content: dataToSend };
+
       // Implement logic to send jsonData to the backend
       const response = await axios.post('http://localhost:3000/data/store', sendContent, {
         headers: {
@@ -26,23 +32,40 @@ const DrawPage = () => {
           'Content-Type': 'application/json',
         },
       });
-      
+
       console.log('Backend response:', response.data);
-      
-    //   console.log('Data to send:', jsonData);
-  
+
       // After sending data to the backend, navigate back to the dashboard
       navigate('/dashboard');
     } catch (error) {
       console.error('Error handling finish drawing:', error.message);
     }
   };
-  
-  
 
   return (
     <div>
       <h1>Draw Page</h1>
+      <div>
+        <label>Name:</label>
+        <input
+          type="text"
+          id="nameInput"
+        />
+      </div>
+      <div>
+        <label>Start Date:</label>
+        <input
+          type="date"
+          id="startDateInput"
+        />
+      </div>
+      <div>
+        <label>End Date:</label>
+        <input
+          type="date"
+          id="endDateInput"
+        />
+      </div>
       <MapComponent onFinishDrawing={handleFinishDrawing} />
     </div>
   );
