@@ -25,14 +25,19 @@ const UserDashboard = () => {
     };
 
     fetchUserData();
-  }, []); // The empty dependency array ensures that the effect runs only once after the initial render
+  }, []);
 
   const handleSignout = () => {
     // Remove JWT token from local storage
     localStorage.removeItem('jwtToken');
-    
+
     // Navigate to the landing page
     navigate('/');
+  };
+
+  const handleDeleteBox = (deletedBoxId) => {
+    // Update the user data state by filtering out the deleted box
+    setUserData((prevUserData) => prevUserData.filter((user) => user._id !== deletedBoxId));
   };
 
   return (
@@ -48,7 +53,7 @@ const UserDashboard = () => {
         <div>
           {/* Display user data here */}
           {userData.map((user, index) => (
-            <DataBox key={index} user={user} />
+            <DataBox key={index} user={user} onDeleteBox={handleDeleteBox} />
           ))}
         </div>
       )}
@@ -60,7 +65,53 @@ const UserDashboard = () => {
   );
 };
 
-const DataBox = ({ user }) => {
+const DataBox = ({ user, onDeleteBox }) => {
+  const [floodArea, setFloodArea] = useState(null);
+  const [loadingFlood, setLoadingFlood] = useState(false);
+
+  const handleFloodButtonClick = async () => {
+    try {
+      setLoadingFlood(true);
+
+      const gJSON = user.content.geoJSON;
+
+      const response = await axios.post('http://localhost:3000/data/fetchflood', {
+        gJSON,
+      }, {
+        headers: {
+          Authorization: localStorage.getItem('jwtToken'),
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('Flood response:', response.data);
+
+      setFloodArea(response.data.floodAreaHa);
+    } catch (error) {
+      console.error('Error sending flood request:', error.message);
+    } finally {
+      setLoadingFlood(false);
+    }
+  };
+
+  const handleDeleteButtonClick = async () => {
+    try {
+      const response = await axios.delete(`http://localhost:3000/data/delete/${user._id}`, {
+        headers: {
+          Authorization: localStorage.getItem('jwtToken'),
+        },
+      });
+
+      if (response.status === 200) {
+        // Handle successful deletion by calling the onDeleteBox prop
+        onDeleteBox(user._id);
+        console.log('Box deleted successfully');
+      }
+    } catch (error) {
+      console.error('Error deleting box:', error.message);
+    }
+  };
+
   return (
     <div
       style={{
@@ -75,18 +126,26 @@ const DataBox = ({ user }) => {
     >
       <div style={{ flex: 1 }}>
         <h3>{user.content.text}</h3>
-        {/* <p>{user.content.geoJSON}</p> */}
-        {/* <h3>{user.content}</h3> */}
-        {/* Add more details as needed */}
-      </div>
-      <div>
-        {/* Add three buttons to the extreme right */}
-        <button style={{ marginLeft: '10px' }}>Flood</button>
-        <button style={{ marginLeft: '10px' }}>Drought</button>
-        <button style={{ marginLeft: '10px' }}>Delete</button>
+        {loadingFlood ? (
+          <p>Loading flood data...</p>
+        ) : (
+          <>
+            {floodArea != null ? (
+              <p>{floodArea}</p>
+            ) : (
+              <button style={{ marginLeft: '10px' }} onClick={handleFloodButtonClick}>
+                Flood
+              </button>
+            )}
+          </>
+        )}
+        <button style={{ marginLeft: '10px' }} onClick={handleDeleteButtonClick}>
+          Delete
+        </button>
       </div>
     </div>
   );
 };
 
 export default UserDashboard;
+  
