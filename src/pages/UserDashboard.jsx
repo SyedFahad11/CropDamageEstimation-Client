@@ -74,9 +74,13 @@ const DataBox = ({ user, onDeleteBox }) => {
       setLoadingFlood(true);
 
       const gJSON = user.content.geoJSON;
+      const sd=user.content.startDate;
+      const ed=user.content.endDate;
 
       const response = await axios.post('http://localhost:3000/data/fetchflood', {
         gJSON,
+        sd,
+        ed
       }, {
         headers: {
           Authorization: localStorage.getItem('jwtToken'),
