@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const RegisterPage = () => {
 
       // Make a request to your backend
       const response = await axios.post('http://localhost:3000/auth/register', {
-        email,
+        username,
         password,
       });
 
@@ -41,11 +41,11 @@ const RegisterPage = () => {
     <div>
       <h1>Register Page</h1>
       <form>
-        <label>Email:</label>
+        <label>Username:</label>
         <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
 
         <label>Password:</label>

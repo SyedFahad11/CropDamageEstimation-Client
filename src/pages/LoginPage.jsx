@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
@@ -12,7 +12,7 @@ const LoginPage = () => {
     try {
       // Make a request to your backend
       const response = await axios.post('http://localhost:3000/auth/login', {
-        email,
+        username,
         password,
       });
 
@@ -39,11 +39,11 @@ const LoginPage = () => {
     <div>
       <h1>Login Page</h1>
       <form>
-        <label>Email:</label>
+        <label>Username:</label>
         <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
 
         <label>Password:</label>
