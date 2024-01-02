@@ -41,16 +41,18 @@ const UserDashboard = () => {
   };
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div className="container mt-5">
+      <div className="d-flex justify-content-between align-items-center mb-4">
         <h1>User Dashboard</h1>
-        <button onClick={handleSignout}>Sign Out</button>
+        <button className="btn btn-outline-danger" onClick={handleSignout}>
+          Sign Out
+        </button>
       </div>
 
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <div>
+        <div className="row">
           {/* Display user data here */}
           {userData.map((user, index) => (
             <DataBox key={index} user={user} onDeleteBox={handleDeleteBox} />
@@ -58,8 +60,8 @@ const UserDashboard = () => {
         </div>
       )}
 
-      <Link to="/draw">
-        <button>Open Map</button>
+      <Link to="/draw" className="btn btn-primary">
+        Open Map
       </Link>
     </div>
   );
@@ -74,19 +76,23 @@ const DataBox = ({ user, onDeleteBox }) => {
       setLoadingFlood(true);
 
       const gJSON = user.content.geoJSON;
-      const sd=user.content.startDate;
-      const ed=user.content.endDate;
+      const sd = user.content.startDate;
+      const ed = user.content.endDate;
 
-      const response = await axios.post('http://localhost:3000/data/fetchflood', {
-        gJSON,
-        sd,
-        ed
-      }, {
-        headers: {
-          Authorization: localStorage.getItem('jwtToken'),
-          'Content-Type': 'application/json',
+      const response = await axios.post(
+        'http://localhost:3000/data/fetchflood',
+        {
+          gJSON,
+          sd,
+          ed,
         },
-      });
+        {
+          headers: {
+            Authorization: localStorage.getItem('jwtToken'),
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       console.log('Flood response:', response.data);
 
@@ -117,39 +123,37 @@ const DataBox = ({ user, onDeleteBox }) => {
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        border: '1px solid #ccc',
-        padding: '10px',
-        margin: '10px',
-        borderRadius: '8px',
-      }}
-    >
-      <div style={{ flex: 1 }}>
-        <h3>{user.content.text}</h3>
-        {loadingFlood ? (
-          <p>Loading flood data...</p>
-        ) : (
-          <>
-            {floodArea != null ? (
-              <p>{floodArea}</p>
-            ) : (
-              <button style={{ marginLeft: '10px' }} onClick={handleFloodButtonClick}>
-                Flood
-              </button>
-            )}
-          </>
-        )}
-        <button style={{ marginLeft: '10px' }} onClick={handleDeleteButtonClick}>
-          Delete
-        </button>
+    <div className="col-md-4 mb-4">
+      <div className="card h-100">
+        <div className="card-body d-flex flex-column">
+          <h5 className="card-title">{user.content.text}</h5>
+          {loadingFlood ? (
+            <p className="card-text">Loading flood data...</p>
+          ) : (
+            <>
+              {floodArea != null ? (
+                <p className="card-text text-success">Flood Area: {floodArea} ha</p>
+              ) : (
+                <button
+                  className="btn btn-outline-primary mt-auto"
+                  onClick={handleFloodButtonClick}
+                >
+                  Check Flood
+                </button>
+              )}
+            </>
+          )}
+          <button
+            className="btn btn-outline-danger mt-2"
+            onClick={handleDeleteButtonClick}
+          >
+            Delete
+          </button>
+        </div>
+        
       </div>
     </div>
   );
 };
 
 export default UserDashboard;
-  
